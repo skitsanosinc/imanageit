@@ -370,6 +370,7 @@ Response
 type: 'result',
 result: {...}
 }
+```
 
 **Create new timeline record**
 
