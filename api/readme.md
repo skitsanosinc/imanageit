@@ -103,7 +103,6 @@ type: 'TimelineType',
 createdOn: 'unix-time',
 createdBy: '{username}',
 projectId: 0,
-clientId: '',
 notes: ''
 }
 ```
@@ -259,6 +258,10 @@ notes: ''
 
 ## HTTP Responses
 
+As defined on [RFC 2616](http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html)
+- - -
+
+
 **200 OK**
 
 The request has succeeded
@@ -316,8 +319,91 @@ PATCH /projects/12 - Partially updates project #12
 DELETE /projects/12 - Deletes project #12
 ```
 
+**Query String Parameters**
+
+Data paging for requests that return array of results uses _bookmark_ and _size_ that defines size of the data page
+
+```
+GET /timeline?bookmark={1..n}&size={1..100}
+```
+
 ##API endpoints
 
+### Search
+
+Searching within entire application
+
+```
+GET /search?query={...}
+```
+
+
+###  Timeline
+
+**Retreive timeline records**
+
+Getting list of records
+
+```
+GET /timeline
+```
+
+Response
+
+```
+{
+type: 'result',
+result: [...]
+}
+```
+
+Retreive single timeline record by _id_
+
+```
+GET /timeline/{id}
+```
+
+Response
+
+```
+{
+type: 'result',
+result: {...}
+}
+
+**Create new timeline record**
+
+```
+POST /timeline
+```
+
+Request body. If _projectId_ field is _null_ it will create a timeline post not related to a project. Those timeline posts visible to everyone within the application.
+
+```
+{
+createdOn: 'unix-time',
+createdBy: '{username}',
+projectId: 0,
+notes: ''
+}
+```
+
+Response
+
+```
+{
+type: 'result',
+result: ...
+}
+```
+
+**Deleting timeline records**
+
+Delete timeline record by _id_
+
+```
+DELETE /timeline/{id}
+```
 
 ### Clients
 
