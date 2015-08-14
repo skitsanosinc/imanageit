@@ -1,5 +1,7 @@
 #iManage.it
 
+Web based project management tool 
+
 
 #### Constants
 
@@ -11,7 +13,7 @@
 {
 IN_PROGRESS: 0,
 COMPLETED: 1,
-ON_PAUSE: 2
+ON_HOLD: 2
 ABANDONED: 3,
 }
 ```
@@ -255,9 +257,50 @@ notes: ''
 ```
 
 
-##API Documentation
+## HTTP Responses
 
-#### HTTP Methods used
+**200 OK**
+
+The request has succeeded
+
+**400 Bad Request**
+
+The request could not be understood by the server due to malformed syntax
+
+**401 Unauthorized**
+
+The request requires user authentication.
+
+**402 Payment Required**
+
+Reserved for future use
+
+**403 Forbidden**
+
+The server understood the request, but is refusing to fulfill it
+
+**404 Not Found**
+
+The server has not found anything matching the Request-URI
+
+**405 Method Not Allowed**
+
+The method specified is not allowed for the resource identified by the Request-URI
+
+**500 Internal Server Error**
+
+The server encountered an unexpected condition which prevented it from fulfilling the request.
+
+**501 Not Implemented**
+
+The server does not support the functionality required to fulfill the request.
+
+**503 Service Unavailable**
+
+The server is currently unable to handle the request due to a temporary overloading or maintenance of the server
+
+
+##HTTP Methods used
 
 ```
 GET /projects - Retrieves a list of project
@@ -273,9 +316,7 @@ PATCH /projects/12 - Partially updates project #12
 DELETE /projects/12 - Deletes project #12
 ```
 
-#### HTTP Responses
-
-
+##API endpoints
 
 
 ### Clients
