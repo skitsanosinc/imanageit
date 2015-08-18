@@ -321,11 +321,62 @@ DELETE /projects/12 - Deletes project #12
 
 **Query String Parameters**
 
-Data paging for requests that return array of results uses _bookmark_ and _size_ that defines size of the data page
+Data paging for requests that return array of results uses _bookmark_ and _limit_ that defines size of the data page. By default it is limited to 20 rows and you can use values from 1 to 100 rows.
 
 ```
-GET /timeline?bookmark={1..n}&size={1..100}
+GET /timeline?bookmark={1..n}&limit={1..100}
 ```
+
+You can search within iManage.it storage by adding _q_ parameter into your query string, for example:
+
+```
+GET /projects?q="My Project"
+```
+
+You can also perform sorting on results to be returned by adding _sort_ field into your query string:
+
+```
+GET /projects?sort="-createdOn"
+```
+
+For more information on sorting and pagination, please refer to [IBM Cloudant Search Indexes](https://cloudant.com/for-developers/search/) documentation. 
+
+
+##API Responses
+
+Becide HTTP standard responses, there are also two types of API responses server will reply on requests  received.
+
+Successful operation response. _result_ field can be of any data type
+
+```
+{
+"type": "result",
+"result": {}
+}
+```
+
+Responses that return list of rows, _result_ would be be in the following form:
+
+```
+{
+"type": "result",
+"result": {
+		"bookmark": ""
+		"totalRows": 0..n,
+		"rows": [...]
+	}
+}
+```
+
+Failed operation response. _result_ field usually is the error message returned by server
+
+```
+{
+"type": "error",
+"result": {}
+}
+```
+
 
 ##API endpoints
 
@@ -337,6 +388,9 @@ Searching within entire application
 GET /search?query={...}
 ```
 
+In current version of the API Search API is disabled
+
+- - - 
 
 ###  Timeline
 
@@ -353,7 +407,7 @@ Response
 ```
 {
 type: 'result',
-result: [...]
+result: {}
 }
 ```
 
@@ -406,14 +460,28 @@ Delete timeline record by _id_
 DELETE /timeline/{id}
 ```
 
+- - - 
+
+
 ### Clients
+
+Client within iManage.it is a person or a company that can have one or more projects in management. All updates on tasks, notes, files and other related data from the project visible to to a Client.
 
 **Retreive Clients**
 
-Get all clients registered within iManage.it
+Get all clients registered within iManage.it. Will return an array of Client Type objects, or empty array if no clients defined.
 
 ```
 GET /clients
+```
+
+Response
+
+```
+{
+type: 'result',
+result: {...}
+}
 ```
 
 **Create new Client profile**
