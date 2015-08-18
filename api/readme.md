@@ -321,7 +321,7 @@ DELETE /projects/12 - Deletes project #12
 
 **Query String Parameters**
 
-Data paging for requests that return array of results uses _bookmark_ and _limit_ that defines size of the data page. By default it is limited to 20 rows and you can use values from 1 to 100 rows.
+Data paging for requests that return array of results uses _bookmark_ and _limit_ that defines size of the data page. By default it is limited to 25 rows and you can use values from 1 to 100 rows.
 
 ```
 GET /timeline?bookmark={1..n}&limit={1..100}
@@ -336,7 +336,7 @@ GET /projects?q="My Project"
 You can also perform sorting on results to be returned by adding _sort_ field into your query string:
 
 ```
-GET /projects?sort="-createdOn"
+GET /clients?sort="-createdOn"
 ```
 
 For more information on sorting and pagination, please refer to [IBM Cloudant Search Indexes](https://cloudant.com/for-developers/search/) documentation. 
@@ -537,27 +537,90 @@ result: ...
 GET /clients/{client_id}
 ```
 
-Get assigned users for the client profile. Each client can have none or many users
+Get assigned users for the client profile. Each client can have none or many users. Result of this query will be list of user names
 
 ```
-GET /clients/team
+GET /clients/{client_id}/team
 ```
+
+Response
+
+```
+{
+type: 'result',
+result: []
+}
+```
+
+Retreive list of projects related to a selected client. Server will return list of objects that contain project ID and title
+
+```
+GET /clients/{client_id}/projects
+```
+
+Response
+
+```
+{
+type: 'result',
+result: [
+		{id: '', title: ''}
+	]
+}
+```
+
+**Deleting client record**
+
+Delete client record by _id_. This call will also delete all related metadata, so once client record is deleted users assigned as team members to this client won't be able to login into the application.
+
+```
+DELETE /clients/{id}
+```
+
+- - - 
+
 
 ### Projects
 
+Whole iManage.it is about managing projects, Project can have one or more milestone, each milestone can have one or more task within it. Each project has own team and tasks assigned to one or more members within that team.
+
 **Retreive projects**
+
+Get all projects will return you all the projects you are member of. iManage.it Administrators see all projects on this call.
 
 ```
 GET /projects
 ```
 
-Returns array of objects of Project type
+Response
 
 ```
-[]
+{
+type: 'result',
+result: {...}
+}
+```
+
+**Retreive single project**
+
+Get the project by its _id_.
+
+```
+GET /projects/{project_id}
+```
+
+Response
+
+```
+{
+type: 'result',
+result: {...}
+}
 ```
 
 **Create new project**
+
+Atproject creation call, you can specify if this project will be also visible to one or more clients. This could be handy in situations when you are working on one project used by multiple clients.
 
 ```
 POST /projects
@@ -571,6 +634,7 @@ deadline: 'unix-time',
 completedOn: 'unix-time',
 client: ['{client_id}'],
 budget: 0,
+cost: 0,
 title: '',
 team: [],
 description: '',
@@ -592,10 +656,82 @@ Result
 ```
 {
 type: 'result'
-result: []
+result: {}
 }
 ```
 
+Getting the team members assigned within the project
+
+```
+GET /projects/{project_id}/team
+```
+
+Getting notes related to project
+
+```
+GET /projects/{project_id}/notes
+```
+
+Getting files and documents related to project
+
+```
+GET /projects/{project_id}/files
+```
+
+Getting milestones within the project
+
+```
+GET /projects/{project_id}/milestones
+```
+
+Getting a single milestone within the project
+
+```
+GET /projects/{project_id}/milestones/{milestone_id}
+```
+
+Response
+
+```
+{
+type: 'result'
+result: {
+	tasksCount: 0..n
+	notesCount: 0..n
+	filesCount: 0..n
+	}
+}
+```
+
+Getting a list of tasks in a single milestone within the project
+
+```
+GET /projects/{project_id}/milestones/{milestone_id}/tasks
+```
+
+Response
+
+```
+{
+type: 'result'
+result: {
+	tasksCount: 0..n
+	notesCount: 0..n
+	filesCount: 0..n
+	}
+}
+```
+
+
+**Deleting project record**
+
+Delete project record by _id_. This call will also delete all related metadata, like milestones, tasks, notes, files and any other related content.
+
+```
+DELETE /projects/{id}
+```
+
+- - -
 
 ### Pins
 
