@@ -673,17 +673,78 @@ Getting the team members assigned within the project
 GET /projects/{project_id}/team
 ```
 
+Adding the team member to the project
+
+```
+POST /projects/{project_id}/team
+```
+
+Request body
+
+```
+{
+	"username": "{username}"
+}
+```
+
+Response
+
+```
+{
+type: 'result'
+result: {}
+}
+```
+
+Deleting the team member _username_ assigned within the project
+
+```
+DELETE /projects/{project_id}/team/{username}
+```
+
+** Project notes **
+
+Notes are just textual remarks related to a project. Note can be in form of a text, image, video, audio or a file attachment. Briefs for the notes added to a project will appear in iManage.it Timeline.
+
 Getting notes related to project
 
 ```
 GET /projects/{project_id}/notes
 ```
 
-Getting files and documents related to project
+Creating a not for a project
+
+```
+POST /projects/{project_id}/notes
+```
+
+Deleting a note from a project
+
+```
+DELETE /projects/{project_id}/notes/{notes_id}
+```
+
+**Files and documents within a project**
+
+Getting files and documents related to aproject
 
 ```
 GET /projects/{project_id}/files
 ```
+
+Adding files and documents to a project
+
+```
+POST /projects/{project_id}/files
+```
+
+Deleting files and documents from a project
+
+```
+DELETE /projects/{project_id}/files/{file_id}
+```
+
+**Milestones (Project phases)**
 
 Getting milestones within the project
 
@@ -710,7 +771,7 @@ result: {
 }
 ```
 
-Getting a list of tasks in a single milestone within the project
+Getting a list of tasks in a single milestone within the project. This method is rather for overview on how many tasks, notes and files project has.
 
 ```
 GET /projects/{project_id}/milestones/{milestone_id}/tasks
@@ -729,13 +790,27 @@ result: {
 }
 ```
 
+**Tasks**
+
+Getting tasks within the milestone
+
+```
+GET /projects/{project_id}/milestones/{milestone_id}/tasks
+```
+
+Getting a single task within the milestone
+
+```
+GET /projects/{project_id}/milestones/{milestone_id}/tasks/{task_id}
+```
+
 
 **Deleting project record**
 
-Delete project record by _id_. This call will also delete all related metadata, like milestones, tasks, notes, files and any other related content.
+Delete project record by _project_id_. This call will also delete all related metadata, like milestones, tasks, notes, files and any other related content.
 
 ```
-DELETE /projects/{id}
+DELETE /projects/{project_id}
 ```
 
 - - -
