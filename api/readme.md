@@ -817,6 +817,7 @@ DELETE /projects/{project_id}
 
 ### Pins
 
+Pins, basically, are shortcuts to the iManage.it application parts, it can be some proejct or the task you are working on, something you want to access quickly from anywhere in the application.
 
 Get all pins
 
@@ -828,4 +829,27 @@ Get all pins for the selected _username_
 
 ```
 /pins/{username}
+```
+
+Add new pinned item
+
+```
+POST /pins/{username}
+```
+
+Request body
+
+```
+{
+"uri": "/projects/somePorjectId"
+}
+```
+
+Result
+
+```
+{
+type: 'result'
+result: {}
+}
 ```
