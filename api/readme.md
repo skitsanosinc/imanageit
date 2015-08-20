@@ -1,5 +1,7 @@
 #iManage.it
 
+Web based project management tool 
+
 
 #### Constants
 
@@ -11,7 +13,7 @@
 {
 IN_PROGRESS: 0,
 COMPLETED: 1,
-ON_PAUSE: 2
+ON_HOLD: 2
 ABANDONED: 3,
 }
 ```
@@ -108,7 +110,6 @@ type: 'TimelineType',
 createdOn: 'unix-time',
 createdBy: '{username}',
 projectId: 0,
-clientId: '',
 notes: ''
 }
 ```
@@ -227,8 +228,6 @@ social:
 	{
 		facebook: '',
 		twitter: '',
-		instagram: '',
-		pinterest: '',
 		skype: '',
 		jabber: '',
 		website: '',
@@ -264,9 +263,54 @@ notes: ''
 ```
 
 
-##API Documentation
+## HTTP Responses
 
-#### HTTP Methods used
+As defined on [RFC 2616](http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html)
+- - -
+
+
+**200 OK**
+
+The request has succeeded
+
+**400 Bad Request**
+
+The request could not be understood by the server due to malformed syntax
+
+**401 Unauthorized**
+
+The request requires user authentication.
+
+**402 Payment Required**
+
+Reserved for future use
+
+**403 Forbidden**
+
+The server understood the request, but is refusing to fulfill it
+
+**404 Not Found**
+
+The server has not found anything matching the Request-URI
+
+**405 Method Not Allowed**
+
+The method specified is not allowed for the resource identified by the Request-URI
+
+**500 Internal Server Error**
+
+The server encountered an unexpected condition which prevented it from fulfilling the request.
+
+**501 Not Implemented**
+
+The server does not support the functionality required to fulfill the request.
+
+**503 Service Unavailable**
+
+The server is currently unable to handle the request due to a temporary overloading or maintenance of the server
+
+
+##HTTP Methods used
 
 ```
 GET /projects - Retrieves a list of project
@@ -282,11 +326,30 @@ PATCH /projects/12 - Partially updates project #12
 DELETE /projects/12 - Deletes project #12
 ```
 
-#### HTTP Responses
+**Query String Parameters**
+
+Data paging for requests that return array of results uses _bookmark_ and _limit_ that defines size of the data page. By default it is limited to 25 rows and you can use values from 1 to 100 rows.
+
+```
+GET /timeline?bookmark={1..n}&limit={1..100}
+```
+
+You can search within iManage.it storage by adding _q_ parameter into your query string, for example:
+
+```
+GET /projects?q="My Project"
+```
+
+You can also perform sorting on results to be returned by adding _sort_ field into your query string:
+
+```
+GET /clients?sort="-createdOn"
+```
+
+For more information on sorting and pagination, please refer to [IBM Cloudant Search Indexes](https://cloudant.com/for-developers/search/) documentation. 
 
 
-
-#### API Responses
+##API Responses
 
 Becide HTTP standard responses, there are also two types of API responses server will reply on requests  received.
 
@@ -299,6 +362,19 @@ Successful operation response. _result_ field can be of any data type
 }
 ```
 
+Responses that return list of rows, _result_ would be be in the following form:
+
+```
+{
+"type": "result",
+"result": {
+		"bookmark": ""
+		"totalRows": 0..n,
+		"rows": [...]
+	}
+}
+```
+
 Failed operation response. _result_ field usually is the error message returned by server
 
 ```
@@ -308,10 +384,95 @@ Failed operation response. _result_ field usually is the error message returned 
 }
 ```
 
+
+##API endpoints
+
+### Search
+
+Searching within entire application
+
+```
+GET /search?query={...}
+```
+
+In current version of the API Search API is disabled
+
+- - - 
+
+###  Timeline
+
+**Retreive timeline records**
+
+Getting list of records
+
+```
+GET /timeline
+```
+
+Response
+
+```
+{
+type: 'result',
+result: {}
+}
+```
+
+Retreive single timeline record by _id_
+
+```
+GET /timeline/{id}
+```
+
+Response
+
+```
+{
+type: 'result',
+result: {...}
+}
+```
+
+**Create new timeline record**
+
+```
+POST /timeline
+```
+
+Request body. If _projectId_ field is _null_ it will create a timeline post not related to a project. Those timeline posts visible to everyone within the application.
+
+```
+{
+createdOn: 'unix-time',
+createdBy: '{username}',
+projectId: 0,
+notes: ''
+}
+```
+
+Response
+
+```
+{
+type: 'result',
+result: ...
+}
+```
+
+**Deleting timeline records**
+
+Delete timeline record by _id_
+
+```
+DELETE /timeline/{id}
+```
+
+- - - 
+
+
 ### Clients
 
 Client within iManage.it is a person or a company that can have one or more projects in management. All updates on tasks, notes, files and other related data from the project visible to to a Client.
-
 
 **Retreive Clients**
 
@@ -325,11 +486,10 @@ Response
 
 ```
 {
-"type": "result",
-"result": []
+type: 'result',
+result: {...}
 }
 ```
-
 
 **Create new Client profile**
 
@@ -373,8 +533,8 @@ Response
 
 ```
 {
-"type"": 'result',
-"result"": ...
+type: 'result',
+result: ...
 }
 ```
 
@@ -384,69 +544,90 @@ Response
 GET /clients/{client_id}
 ```
 
-Get assigned users for the client profile. Each client can have none or many users
+Get assigned users for the client profile. Each client can have none or many users. Result of this query will be list of user names
 
 ```
-GET /clients/team
+GET /clients/{client_id}/team
 ```
 
-***Create new client***
-
-```
-POST /clients
-```
-
-Request body
+Response
 
 ```
 {
-createdOn: 'unix-time',
-createdBy: '{username}',
-name: '',
-companyName: '',
-team: [],
-contact: {
-	address: '',
-	state: '',
-	ountry: '',
-	zip: '',
-	city: '',
-	fax: '',
-	phone: '',
-	mobile: '',
-	email: ''
-	},
-social: 
-	{
-		facebook: '',
-		twitter: '',
-		instagram: '',
-		pinterest: '',
-		skype: '',
-		jabber: '',
-		website: '',
-		github: '',
-		linkedIn: ''
-	},
-not
+type: 'result',
+result: []
+}
 ```
+
+Retreive list of projects related to a selected client. Server will return list of objects that contain project ID and title
+
+```
+GET /clients/{client_id}/projects
+```
+
+Response
+
+```
+{
+type: 'result',
+result: [
+		{id: '', title: ''}
+	]
+}
+```
+
+**Deleting client record**
+
+Delete client record by _id_. This call will also delete all related metadata, so once client record is deleted users assigned as team members to this client won't be able to login into the application.
+
+```
+DELETE /clients/{id}
+```
+
+- - - 
 
 
 ### Projects
 
+Whole iManage.it is about managing projects, Project can have one or more milestone, each milestone can have one or more task within it. Each project has own team and tasks assigned to one or more members within that team.
+
 **Retreive projects**
+
+Get all projects will return you all the projects you are member of. iManage.it Administrators see all projects on this call.
 
 ```
 GET /projects
 ```
 
-Returns array of objects of Project type
+Response
 
 ```
-[]
+{
+type: 'result',
+result: {...}
+}
+```
+
+**Retreive single project**
+
+Get the project by its _id_.
+
+```
+GET /projects/{project_id}
+```
+
+Response
+
+```
+{
+type: 'result',
+result: {...}
+}
 ```
 
 **Create new project**
+
+Atproject creation call, you can specify if this project will be also visible to one or more clients. This could be handy in situations when you are working on one project used by multiple clients.
 
 ```
 POST /projects
@@ -460,6 +641,7 @@ deadline: 'unix-time',
 completedOn: 'unix-time',
 client: ['{client_id}'],
 budget: 0,
+cost: 0,
 title: '',
 team: [],
 description: '',
@@ -481,10 +663,82 @@ Result
 ```
 {
 type: 'result'
-result: []
+result: {}
 }
 ```
 
+Getting the team members assigned within the project
+
+```
+GET /projects/{project_id}/team
+```
+
+Getting notes related to project
+
+```
+GET /projects/{project_id}/notes
+```
+
+Getting files and documents related to project
+
+```
+GET /projects/{project_id}/files
+```
+
+Getting milestones within the project
+
+```
+GET /projects/{project_id}/milestones
+```
+
+Getting a single milestone within the project
+
+```
+GET /projects/{project_id}/milestones/{milestone_id}
+```
+
+Response
+
+```
+{
+type: 'result'
+result: {
+	tasksCount: 0..n
+	notesCount: 0..n
+	filesCount: 0..n
+	}
+}
+```
+
+Getting a list of tasks in a single milestone within the project
+
+```
+GET /projects/{project_id}/milestones/{milestone_id}/tasks
+```
+
+Response
+
+```
+{
+type: 'result'
+result: {
+	tasksCount: 0..n
+	notesCount: 0..n
+	filesCount: 0..n
+	}
+}
+```
+
+
+**Deleting project record**
+
+Delete project record by _id_. This call will also delete all related metadata, like milestones, tasks, notes, files and any other related content.
+
+```
+DELETE /projects/{id}
+```
+
+- - -
 
 ### Pins
 
