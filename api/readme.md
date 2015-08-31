@@ -13,8 +13,8 @@ Web based project management tool
 {
 IN_PROGRESS: 0,
 COMPLETED: 1,
-ON_HOLD: 2
-ABANDONED: 3,
+ON_HOLD: 2,
+ABANDONED: 3
 }
 ```
 
@@ -109,7 +109,7 @@ linkedAccounts: {
 type: 'TimelineType',
 createdOn: 'unix-time',
 createdBy: '{username}',
-projectId: 0,
+projectId: '',
 notes: ''
 }
 ```
@@ -216,7 +216,7 @@ team: [],
 contact: {
 	address: '',
 	state: '',
-	ountry: '',
+	country: '',
 	zip: '',
 	city: '',
 	fax: '',
@@ -245,18 +245,6 @@ notes: ''
 type: 'FileType',
 createdOn: 'unix-time',
 createdBy: '{username}',
-projectId: '',
-notes: ''
-}
-```
-
-**Note**
-
-```
-{
-type: 'NoteType',
-createdOn: 'unix-time',
-createdBy: '{username}'
 projectId: '',
 notes: ''
 }
@@ -351,7 +339,7 @@ For more information on sorting and pagination, please refer to [IBM Cloudant Se
 
 ##API Responses
 
-Becide HTTP standard responses, there are also two types of API responses server will reply on requests  received.
+Beside HTTP standard responses, there are also two types of API responses server will reply on requests  received.
 
 Successful operation response. _result_ field can be of any data type
 
@@ -507,7 +495,7 @@ team: [],
 contact: {
 	address: '',
 	state: '',
-	ountry: '',
+	country: '',
 	zip: '',
 	city: '',
 	fax: '',
@@ -627,7 +615,7 @@ result: {...}
 
 **Create new project**
 
-Atproject creation call, you can specify if this project will be also visible to one or more clients. This could be handy in situations when you are working on one project used by multiple clients.
+At project creation call, you can specify if this project will be also visible to one or more clients. This could be handy in situations when you are working on one project used by multiple clients.
 
 ```
 POST /projects
@@ -682,9 +670,28 @@ POST /projects/{project_id}/team
 Request body
 
 ```
+[{username}, ...]
+```
+
+Response
+
+```
 {
-	"username": "{username}"
+type: 'result'
+result: {}
 }
+```
+
+Modifying the team member to the project
+
+```
+PUT /projects/{project_id}/team
+```
+
+Request body
+
+```
+[{username}, ...]
 ```
 
 Response
@@ -700,6 +707,15 @@ Deleting the team member _username_ assigned within the project
 
 ```
 DELETE /projects/{project_id}/team/{username}
+```
+
+Response
+
+```
+{
+type: 'result'
+result: {}
+}
 ```
 
 ** Project notes **
