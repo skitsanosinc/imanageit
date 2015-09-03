@@ -63,7 +63,6 @@ HIGH: 1
 {
 type: 'UserType',
 createdOn: 'unix-time',
-createdBy: '{username}',
 firstName: '',
 lastName: '',
 gender: -1|0|1,
@@ -99,7 +98,8 @@ linkedAccounts: {
 	instagram: '',
 	google: ''
 	}
-}
+},
+pins: []
 ```
 
 **Timeline**
@@ -121,7 +121,6 @@ notes: ''
 {
 type: 'ProjectType',
 createdOn: 'unix-time',
-createdBy: '{username}'
 deadline: 'unix-time',
 completedOn: 'unix-time',
 client: ['{client_id}'],
@@ -244,16 +243,27 @@ notes: ''
 {
 type: 'FileType',
 createdOn: 'unix-time',
-createdBy: '{username}',
 projectId: '',
 notes: ''
+}
+```
+
+**Pin**
+
+```
+{
+type: 'PinType',
+createdOn: 'unix-time',
+createdBy: '{username}',
+uri: '',
+title: ''
 }
 ```
 
 
 ## HTTP Responses
 
-As defined on [RFC 2616](http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html)
+As defined in [RFC 2616](http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html)
 - - -
 
 
@@ -655,13 +665,15 @@ result: {}
 }
 ```
 
+**Project Teams**
+
 Getting the team members assigned within the project
 
 ```
 GET /projects/{project_id}/team
 ```
 
-Adding the team member to the project
+Adding the team members to the project
 
 ```
 POST /projects/{project_id}/team
@@ -768,6 +780,15 @@ Getting milestones within the project
 GET /projects/{project_id}/milestones
 ```
 
+Result
+
+```
+{
+type: 'result'
+result: {}
+}
+```
+
 Getting a single milestone within the project
 
 ```
@@ -780,12 +801,16 @@ Response
 {
 type: 'result'
 result: {
+	name: '',
+	description: '',
+	startsOn: '',
+	endsOn: ''
 	tasksCount: 0..n
-	notesCount: 0..n
-	filesCount: 0..n
 	}
 }
 ```
+
+**Tasks**
 
 Getting a list of tasks in a single milestone within the project. This method is rather for overview on how many tasks, notes and files project has.
 
@@ -798,20 +823,8 @@ Response
 ```
 {
 type: 'result'
-result: {
-	tasksCount: 0..n
-	notesCount: 0..n
-	filesCount: 0..n
-	}
+result: {}
 }
-```
-
-**Tasks**
-
-Getting tasks within the milestone
-
-```
-GET /projects/{project_id}/milestones/{milestone_id}/tasks
 ```
 
 Getting a single task within the milestone
@@ -820,6 +833,14 @@ Getting a single task within the milestone
 GET /projects/{project_id}/milestones/{milestone_id}/tasks/{task_id}
 ```
 
+Response
+
+```
+{
+type: 'result'
+result: {}
+}
+```
 
 **Deleting project record**
 
@@ -835,29 +856,47 @@ DELETE /projects/{project_id}
 
 Pins, basically, are shortcuts to the iManage.it application parts, it can be some proejct or the task you are working on, something you want to access quickly from anywhere in the application.
 
-Get all pins
+**Get all pins**
 
 ```
 GET /pins
 ```
+Result
 
-Get all pins for the selected _username_
+```
+{
+type: 'result'
+result: {}
+}
+```
+
+**Get all pins for the selected _username_**
 
 ```
 /pins/{username}
 ```
 
-Add new pinned item
+Result
+
+```
+{
+type: 'result'
+result: {}
+}
+```
+
+**Add new pinned item**
 
 ```
 POST /pins/{username}
 ```
 
-Request body
+Request body. Pass _uri_ and _title_ of the pinned item.
 
 ```
 {
-"uri": "/projects/somePorjectId"
+"uri": "/projects/somePorjectId",
+"title": ""
 }
 ```
 
@@ -868,4 +907,12 @@ Result
 type: 'result'
 result: {}
 }
+```
+
+**Remove pin**
+
+To remove pinned item from the _username_ pins, pass the _uri_ of the pin you want to delete 
+
+```
+DELETE /pins/{username}?uri={uri}
 ```
