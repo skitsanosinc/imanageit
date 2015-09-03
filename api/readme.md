@@ -99,7 +99,9 @@ linkedAccounts: {
 	google: ''
 	}
 },
-pins: []
+pins: [
+	{uri: '', title: ''}
+	]
 ```
 
 **Timeline**
@@ -114,6 +116,18 @@ notes: ''
 }
 ```
 
+**AuditType**
+
+```
+{
+	type: 'AuditType',
+	createdOn: 'unix-time',
+	createdBy: '{username}',
+	docType: '',
+	action: '',
+	notes: ''
+}
+```
 
 **Project**
 
@@ -237,29 +251,17 @@ notes: ''
 }
 ```
 
-**File**
+**NoteType**
 
 ```
 {
-type: 'FileType',
+type: 'NoteType',
 createdOn: 'unix-time',
+createdBy: '{username}'
 projectId: '',
 notes: ''
 }
 ```
-
-**Pin**
-
-```
-{
-type: 'PinType',
-createdOn: 'unix-time',
-createdBy: '{username}',
-uri: '',
-title: ''
-}
-```
-
 
 ## HTTP Responses
 
@@ -740,7 +742,7 @@ Getting notes related to project
 GET /projects/{project_id}/notes
 ```
 
-Creating a not for a project
+Creating a note for a project
 
 ```
 POST /projects/{project_id}/notes
@@ -854,21 +856,7 @@ DELETE /projects/{project_id}
 
 ### Pins
 
-Pins, basically, are shortcuts to the iManage.it application parts, it can be some proejct or the task you are working on, something you want to access quickly from anywhere in the application.
-
-**Get all pins**
-
-```
-GET /pins
-```
-Result
-
-```
-{
-type: 'result'
-result: {}
-}
-```
+Pins, basically, are shortcuts to the iManage.it application parts, it can be some project or the task you are working on, something you want to access quickly from anywhere in the application.
 
 **Get all pins for the selected _username_**
 
@@ -895,7 +883,7 @@ Request body. Pass _uri_ and _title_ of the pinned item.
 
 ```
 {
-"uri": "/projects/somePorjectId",
+"uri": "/projects/{projectId}",
 "title": ""
 }
 ```
@@ -915,4 +903,115 @@ To remove pinned item from the _username_ pins, pass the _uri_ of the pin you wa
 
 ```
 DELETE /pins/{username}?uri={uri}
+```
+
+- - - 
+
+### Audit Log
+
+Audit log allows you to track on who did what what in the system, so you can collect history of modifications on each part of any piece of data stored in in iManage.it
+
+**Get all audit log records**
+
+```
+GET /audit
+```
+
+**History of actions**
+
+Every single piece of data in iManage.it has own unique _id_ that you can use to lookup the history of actions on that data piece.
+
+```
+GET /audit/byid/{id}
+```
+
+Result
+
+```
+{
+type: 'result'
+result: {}
+}
+```
+
+**Changes by user**
+
+Sending request to /audit/byuser service will lookup for you all audit records made by _username_ user, even if user account may not exist anymore in the system.
+
+```
+GET /audit/byuser/{username}
+```
+
+Result
+
+```
+{
+type: 'result'
+result: {}
+}
+```
+
+**Changes within interval**
+
+To get audit records for the specefic time frame, you need to call /audit/bydate service with _timeinterval_ in format like {unixtime_start}-{unixtime_end}
+
+```
+GET /audit/bydate/{timeinterval}
+```
+
+Result
+
+```
+{
+type: 'result'
+result: {}
+}
+```
+
+**Write new audit log record**
+
+```
+POST /audit
+```
+
+Request body
+
+```
+{
+docType: 'ProjectType|UserType|...',
+action: '0|1|2|3|4',
+notes: null
+}
+```
+
+Where docType is one of the following
+
+- ProjectType
+- FeatureRequestType 
+- MilestoneType
+- TaskType 
+- UserType
+- ClientType
+- NoteType
+- TimelineType
+
+
+and _action_ is Audit Action code
+
+```
+{
+INFO: 0,
+CREATED: 1,
+MODIFIED: 2,
+DELETED: 3,
+OTHER: 4
+}
+```
+
+**Removing auidit log record**
+
+To delete a record from audit log, you need to specify its _id_
+
+```
+DELETE /auditlog/{id}
 ```
