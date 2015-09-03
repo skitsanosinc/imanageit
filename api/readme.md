@@ -1015,3 +1015,56 @@ To delete a record from audit log, you need to specify its _id_
 ```
 DELETE /auditlog/{id}
 ```
+
+- - - 
+
+###Mailbox
+
+**Get messages**
+
+By default this call returns messages for the user that logged in
+
+```
+GET /mailbox
+```
+
+**Send new message**
+
+```
+POST /mailbox
+```
+If message that about to be created is a reply to some existing message, pass _threadId_ value equal to oriiginal message Id.
+
+Field _to_ allows array of one or more usernnames, so if more than one recipient specified, each one of them will receive the same message. _tags_ is completely optional feature but it can be handy for grouping conversations by tagging them, something like labels in Google Mail, if you are familiar with it.
+
+Request body
+
+```
+{
+threadId: ''
+to: [],
+subject: '',
+body: '',
+tags:[]
+}
+```
+
+**Get list of tags**
+
+Messages that contains tags parsed in a way that you can retreive all tags used in your mailbox
+
+```
+GET /mailbox/tags
+```
+
+**Get messages sent**
+
+```
+GET /mailbox/sent
+```
+
+**Get mesages marked for deletion**
+
+```
+GET /mailbox/trash
+```
