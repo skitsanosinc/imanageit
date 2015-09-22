@@ -102,6 +102,7 @@ linkedAccounts: {
 pins: [
 	{uri: '', title: ''}
 	]
+}
 ```
 
 **Timeline**
@@ -123,6 +124,7 @@ notes: ''
 	type: 'AuditType',
 	createdOn: 'unix-time',
 	createdBy: '{username}',
+	docI:  '',
 	docType: '',
 	action: '',
 	notes: ''
@@ -852,6 +854,140 @@ Delete project record by _project_id_. This call will also delete all related me
 DELETE /projects/{project_id}
 ```
 
+- - - 
+
+### Users
+
+**Getting users**
+
+Getting all the users with their metadata
+
+```
+GET /users
+```
+
+**Getting user by username**
+
+Requesting a user profile by _username_ is pretty straight forward. Keep in mind there is are no application credentials will be returned on this call. Use password recovery option if you want to reset account password.
+
+```
+GET /users/{username}
+```
+
+Result
+
+```
+{
+type: 'result'
+result: {}
+}
+```
+
+**Creating a user account**
+
+```
+POST /users
+```
+
+Request body
+
+```
+{
+"username": "",
+"password": "",
+"email": ""
+}
+```
+
+Request will return successful reply type if account has been created, otherwise with error reply like user exists message.
+
+**Resetting password**
+
+Requesting restting password will be resulting application sending an email to the address user specified during the registration with new login credentials.
+
+```
+GET /resetpassword/{username}
+```
+
+Result
+
+```
+{
+type: 'result'
+result: {}
+}
+```
+
+**Updating user profile**
+
+Updating user call allows you to modify entire user profile at once.
+
+
+```
+PUT /users/{username}
+```
+
+Request body
+
+```
+{
+firstName: '',
+lastName: '',
+gender: -1|0|1,
+dateOfBirth: 'unix-time',
+email: '',
+enabled: true,
+contact: 
+	{
+		address: '',
+		state: '',
+		country: '',
+		zip: '',
+		city: '',
+		fax: '',
+		phone: '',
+		mobile: ''
+	},
+social: 
+	{
+		facebook: '',
+		twitter: '',
+		skype: '',
+		jabber: '',
+		website: '',
+		github: '',
+		linkedIn: ''
+	}
+},
+pins: [
+	{uri: '', title: ''}
+	]
+}
+```
+
+Result
+
+```
+{
+type: 'result'
+result: {}
+}
+
+**Deleting user**
+
+```
+DELETE /users/{username}
+```
+
+Result
+
+```
+{
+type: 'result'
+result: {}
+}
+```
+
 - - -
 
 ### Pins
@@ -922,7 +1058,7 @@ GET /audit
 Every single piece of data in iManage.it has own unique _id_ that you can use to lookup the history of actions on that data piece.
 
 ```
-GET /audit/byid/{id}
+GET /audit?id={id}
 ```
 
 Result
@@ -939,7 +1075,7 @@ result: {}
 Sending request to /audit/byuser service will lookup for you all audit records made by _username_ user, even if user account may not exist anymore in the system.
 
 ```
-GET /audit/byuser/{username}
+GET /audit?username={username}
 ```
 
 Result
@@ -953,10 +1089,10 @@ result: {}
 
 **Changes within interval**
 
-To get audit records for the specefic time frame, you need to call /audit/bydate service with _timeinterval_ in format like {unixtime_start}-{unixtime_end}
+To get audit records for the specefic time frame, you need to call /audit service with _timeinterval_ in format like [{unixtime_start} TO {unixtime_end}]
 
 ```
-GET /audit/bydate/{timeinterval}
+GET /audit?createdOn={timeinterval}
 ```
 
 Result
