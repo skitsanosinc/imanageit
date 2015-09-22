@@ -972,6 +972,7 @@ Result
 type: 'result'
 result: {}
 }
+```
 
 **Deleting user**
 
