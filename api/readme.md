@@ -1155,6 +1155,73 @@ DELETE /auditlog/{id}
 
 - - - 
 
+###Application logs
+
+**Retreiving logs**
+
+iManage.it stores various application related logs that you can access by requesting _/logs_ end point
+
+```
+GET /logs
+```
+
+Result
+
+```
+{
+type: 'result'
+result: {}
+}
+```
+
+- - - 
+
+###Calendar
+
+Calendar supports three types of events. Private ones are those that visible to the user that created the event, Group events are the ones that visible to all team members of any project selected user takes part, and, Public events are the ones that visible to everyone in iManage.it
+
+**Get all events**
+
+```
+GET /events
+```
+
+Result
+
+```
+{
+type: 'result'
+result: {}
+}
+```
+
+**Get events by user**
+
+The following call retreives all the calendar events owned by selected _username_
+
+```
+GET /events/{username}
+```
+
+Result
+
+```
+{
+type: 'result'
+result: {}
+}
+```
+
+**Retreiving group events**
+
+Calendar events marked as visible to a group, as result it will return array of events from the selected _username_ account marked as group and all the events from other users where _username_ is a team member. 
+
+```
+GET /events/{username}/group
+```
+
+- - - 
+
 ###Mailbox
 
 **Get messages**
